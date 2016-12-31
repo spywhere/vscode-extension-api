@@ -9,12 +9,12 @@ Extension API is simply an extension that let you evaluate Visual Studio Code's 
 Useful for extension authoring.
 
 ### How to use it?
-Simply install the extension, Extension API should show the shortcut in the status bar!
+Simply install the extension, Extension API should show the shortcut (plug icon) in the status bar!
 
 You can also use the following commands...
 
 - `Extension API: Evaluate...`: Evaluate the specified JavaScript expression
 - `Extension API: Pick Expression...`: Pick the expression from the editor's context (shortcut item default behaviour)
 
-By default, Extension API will show only private (prefixed by `_`) and public properties.
-However, you can also show prototype properties (prefixed by `__`) by set the configurations in the settings.
+By default, Extension API will show only private (prefixed by `_` ) and public properties.
+However, you can also show prototype properties (prefixed by `__` ) by set the configurations in the settings.
