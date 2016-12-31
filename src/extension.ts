@@ -50,7 +50,7 @@ class ExtensionAPI {
 
     constructor(){
         this.statusItem = vscode.window.createStatusBarItem(
-            vscode.StatusBarAlignment.Right, 10
+            vscode.StatusBarAlignment.Right
         );
         this.statusItem.command = "extension-api.pickExpression";
         this.statusItem.text = "$(plug)";
