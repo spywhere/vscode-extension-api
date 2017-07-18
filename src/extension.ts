@@ -26,6 +26,16 @@ class ExtensionAPIController {
                 this.extensionAPI.evaluate();
             }
         ));
+        subscriptions.push(vscode.commands.registerCommand(
+            "extension-api.runSelection", () => {
+                this.extensionAPI.runSelection();
+            }
+        ));
+        subscriptions.push(vscode.commands.registerCommand(
+            "extension-api.runFile", () => {
+                this.extensionAPI.runFile();
+            }
+        ));
         vscode.workspace.onDidChangeConfiguration(() => {
             this.extensionAPI.updateConfigurations();
         }, this, subscriptions);
@@ -163,6 +173,20 @@ class ExtensionAPI {
             }
             this.evaluateExpression(value);
         })
+    }
+
+    runSelection() {
+        let editor = vscode.window.activeTextEditor;
+        let selection = editor.selection;
+        if (!selection.isEmpty) {
+            this.evaluateExpression(editor.document.getText(selection));
+        }
+    }
+
+    runFile() {
+        let editor = vscode.window.activeTextEditor;
+        let text = editor.document.getText();
+        this.evaluateExpression(text);
     }
 
     evaluateExpression(expression: string){
