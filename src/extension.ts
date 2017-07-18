@@ -176,6 +176,7 @@ class ExtensionAPI {
         let error: string = undefined;
         try {
             let returnObject = eval(expression);
+            console.log(returnObject);
             if(typeof(returnObject) === "object"){
                 output = JSON.stringify(returnObject);
             }else if(returnObject === undefined || returnObject === null){
