@@ -185,8 +185,8 @@ class ExtensionAPI {
             }
             this.outputChanel.appendLine(`Expression: ${expression}`);
             this.outputChanel.appendLine(`Output: ${output}`);
-        } catch(error) {
-            error = `Error: ${error}`;
+        } catch(err) {
+            error = `Error: ${err}`;
         }
 
         let actionHandler = item => {
