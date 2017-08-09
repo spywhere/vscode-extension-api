@@ -26,6 +26,16 @@ class ExtensionAPIController {
                 this.extensionAPI.evaluate();
             }
         ));
+        subscriptions.push(vscode.commands.registerCommand(
+            "extension-api.runSelection", () => {
+                this.extensionAPI.runSelection();
+            }
+        ));
+        subscriptions.push(vscode.commands.registerCommand(
+            "extension-api.runFile", () => {
+                this.extensionAPI.runFile();
+            }
+        ));
         vscode.workspace.onDidChangeConfiguration(() => {
             this.extensionAPI.updateConfigurations();
         }, this, subscriptions);
@@ -165,6 +175,20 @@ class ExtensionAPI {
         })
     }
 
+    runSelection() {
+        let editor = vscode.window.activeTextEditor;
+        let selection = editor.selection;
+        if (!selection.isEmpty) {
+            this.evaluateExpression(editor.document.getText(selection));
+        }
+    }
+
+    runFile() {
+        let editor = vscode.window.activeTextEditor;
+        let text = editor.document.getText();
+        this.evaluateExpression(text);
+    }
+
     evaluateExpression(expression: string){
         if(!this.outputChanel){
             this.outputChanel = vscode.window.createOutputChannel(
@@ -176,6 +200,7 @@ class ExtensionAPI {
         let error: string = undefined;
         try {
             let returnObject = eval(expression);
+            console.log(returnObject);
             if(typeof(returnObject) === "object"){
                 output = JSON.stringify(returnObject);
             }else if(returnObject === undefined || returnObject === null){
@@ -185,8 +210,8 @@ class ExtensionAPI {
             }
             this.outputChanel.appendLine(`Expression: ${expression}`);
             this.outputChanel.appendLine(`Output: ${output}`);
-        } catch(error) {
-            error = `Error: ${error}`;
+        } catch(err) {
+            error = `Error: ${err}`;
         }
 
         let actionHandler = item => {
