@@ -1,6 +1,6 @@
 ## Extension API
-[![Version](http://vsmarketplacebadge.apphb.com/version/spywhere.extension-api.svg)](https://marketplace.visualstudio.com/items?itemName=spywhere.extension-api)
-[![Installs](http://vsmarketplacebadge.apphb.com/installs/spywhere.extension-api.svg)](https://marketplace.visualstudio.com/items?itemName=spywhere.extension-api)
+[![Version](https://vsmarketplacebadge.apphb.com/version/spywhere.extension-api.svg)](https://marketplace.visualstudio.com/items?itemName=spywhere.extension-api)
+[![Installs](https://vsmarketplacebadge.apphb.com/installs/spywhere.extension-api.svg)](https://marketplace.visualstudio.com/items?itemName=spywhere.extension-api)
 
 Evaluate Visual Studio Code's Extension API
 

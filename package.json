@@ -2,7 +2,7 @@
   "name": "extension-api",
   "displayName": "Extension API",
   "description": "Evaluate Visual Studio Code's Extension API",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "publisher": "spywhere",
   "icon": "images/icon.png",
   "bugs": {
@@ -34,28 +34,32 @@
       {
         "command": "extension-api.pickExpression",
         "title": "Extension API: Pick Expression..."
-      }, {
+      },
+      {
         "command": "extension-api.evaluate",
         "title": "Extension API: Evaluate..."
-      }, {
+      },
+      {
         "command": "extension-api.runSelection",
         "title": "Extension API: Run selected code"
-      }, {
+      },
+      {
         "command": "extension-api.runFile",
         "title": "Extension API: Run file"
       }
     ],
     "menus": {
-			"editor/context": [
-				{
-					"command": "extension-api.runSelection",
-					"group": "eval"
-				}, {
-					"command": "extension-api.runFile",
-					"group": "eval"
-				}
-			]
-		},
+      "editor/context": [
+        {
+          "command": "extension-api.runSelection",
+          "group": "eval"
+        },
+        {
+          "command": "extension-api.runFile",
+          "group": "eval"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "Extension API Configurations",
@@ -74,6 +78,11 @@
           "type": "boolean",
           "default": true,
           "description": "Show status bar item for API shortcut."
+        },
+        "extension-api.useAsBatteryIndicator": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use status bar item for battery status."
         }
       }
     }
@@ -87,5 +96,8 @@
     "@types/node": "^6.0.40",
     "typescript": "^2.0.3",
     "vscode": "^1.0.0"
+  },
+  "dependencies": {
+    "node-power-info": "^1.0.3"
   }
 }

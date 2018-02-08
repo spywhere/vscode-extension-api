@@ -1,5 +1,6 @@
 "use strict";
 import * as vscode from "vscode";
+import * as power from "node-power-info";
 
 export function activate(context: vscode.ExtensionContext) {
     let extensionAPI = new ExtensionAPI();
@@ -57,6 +58,7 @@ class ExtensionAPI {
     statusItem: vscode.StatusBarItem;
     includePrototype = false;
     includePrivate = true;
+    statusUpdater: NodeJS.Timer | undefined;
 
     constructor(){
         this.statusItem = vscode.window.createStatusBarItem(
@@ -77,7 +79,14 @@ class ExtensionAPI {
         let configurations = vscode.workspace.getConfiguration("extension-api");
         this.includePrototype = configurations.get<boolean>("includePrototype");
         this.includePrivate = configurations.get<boolean>("includePrivate");
+        if (this.statusUpdater) {
+            clearInterval(this.statusUpdater);
+        }
         if(configurations.get<boolean>("showAPIShortcut")){
+            if (configurations.get<boolean>("useAsBatteryIndicator")) {
+                this.updateEasterEgg();
+                setInterval(this.updateEasterEgg.bind(this), 60000);
+            }
             this.statusItem.show();
         }else{
             this.statusItem.hide();
@@ -241,5 +250,42 @@ class ExtensionAPI {
                 }
             ).then(actionHandler);
         }
+    }
+
+    updateEasterEgg(){
+        this.statusItem.text = "$(plug)";
+        power.getDefault().then(
+            (provider) => provider.getBatteries()
+        ).then((batteries) => {
+            if (batteries.length <= 0) {
+                return;
+            }
+            let battery = batteries[0];
+
+            if (battery.chargeStatus === "discharging") {
+                this.statusItem.text = "$(database)";
+            } else if (battery.chargeStatus === "charging") {
+                this.statusItem.text = "$(zap)";
+            }
+
+            let status = `Pick Visual Studio Code's Extension API\n\nBattery: ${
+                battery.powerLevel
+            }% (${
+                battery.chargeStatus
+            })`;
+
+            if (battery.isTimeAvailable) {
+                let remainingMinutes = (
+                    "0" + battery.remainingTimeMinutes
+                ).slice(-2);
+                status += `\nTime Remaining: ${
+                    battery.remainingTimeHours
+                }:${
+                    remainingMinutes
+                }`;
+            }
+
+            this.statusItem.tooltip = status;
+        });
     }
 }
