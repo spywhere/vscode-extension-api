@@ -93,9 +93,9 @@
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "devDependencies": {
-    "@types/node": "^6.0.40",
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0"
+    "@types/node": "^7.0.43",
+    "typescript": "^2.5.3",
+    "vscode": "^1.1.5"
   },
   "dependencies": {
     "node-power-info": "^1.0.3"
