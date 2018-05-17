@@ -58,6 +58,7 @@ class ExtensionAPI {
     statusItem: vscode.StatusBarItem;
     includePrototype = false;
     includePrivate = true;
+    pretty = false;
     statusUpdater: NodeJS.Timer | undefined;
 
     constructor(){
@@ -79,6 +80,7 @@ class ExtensionAPI {
         let configurations = vscode.workspace.getConfiguration("extension-api");
         this.includePrototype = configurations.get<boolean>("includePrototype");
         this.includePrivate = configurations.get<boolean>("includePrivate");
+        this.pretty = configurations.get<boolean>("pretty");
         if (this.statusUpdater) {
             clearInterval(this.statusUpdater);
         }
@@ -121,9 +123,7 @@ class ExtensionAPI {
                     value
                 ),
                 description: this.getType(object[value]),
-                identifier: (
-                    isArray ? `[${value}]` : `.${value}`
-                ),
+                identifier: isArray ? `[${value}]` :`.${value}`,
                 value: object[value]
             };
         });
@@ -198,32 +198,9 @@ class ExtensionAPI {
         this.evaluateExpression(text);
     }
 
-    evaluateExpression(expression: string){
-        if(!this.outputChanel){
-            this.outputChanel = vscode.window.createOutputChannel(
-                "Extension API"
-            );
-        }
-        this.outputChanel.clear();
-        let output: string = undefined;
-        let error: string = undefined;
-        try {
-            let returnObject = eval(expression);
-            console.log(returnObject);
-            if(typeof(returnObject) === "object"){
-                output = JSON.stringify(returnObject);
-            }else if(returnObject === undefined || returnObject === null){
-                output = typeof(returnObject);
-            }else{
-                output = `${returnObject}`;
-            }
-            this.outputChanel.appendLine(`Expression: ${expression}`);
-            this.outputChanel.appendLine(`Output: ${output}`);
-        } catch(err) {
-            error = `Error: ${err}`;
-        }
 
-        let actionHandler = item => {
+    actionHandler(expression: string) {
+        return (item) => {
             if(!item){
                 return;
             }
@@ -232,23 +209,90 @@ class ExtensionAPI {
             }else if(item.identifier === "show"){
                 this.outputChanel.show();
             }
-        };
+        }
+    };
 
-        if(error){
-            vscode.window.showErrorMessage(output, {
+    private resolveExpression(expression: string, output: string) {
+        vscode.window.showInformationMessage(
+            output, {
+                title: "Re-Evaluate",
+                identifier: "reevaluate"
+            }, {
                 title: "Show Full Output",
                 identifier: "show"
-            }).then(actionHandler);
+            }
+        ).then(this.actionHandler(expression));
+    }
+
+    private determinePromise(expression: string, promise: any) {
+        if (
+            typeof(promise) === "object" &&
+            !Array.isArray(promise) &&
+            promise.then &&
+            typeof(promise.then) === "function"
+        ) {
+            let thenPromise = promise.then(
+                (output) => this.determineOutput(expression, output)
+            );
+            if (
+                typeof(thenPromise) === "object" &&
+                !Array.isArray(thenPromise) &&
+                thenPromise.catch &&
+                typeof(thenPromise.catch) === "function"
+            ) {
+                thenPromise.catch(
+                    (error) => this.rejectExpression(expression, error)
+                );
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private rejectExpression(expression: string, error: Error) {
+        vscode.window.showErrorMessage(`Error: ${ error }`, {
+            title: "Show Full Output",
+            identifier: "show"
+        }).then(this.actionHandler(expression));
+    }
+
+    private determineOutput(expression: string, output: any) {
+        if(!this.outputChanel){
+            this.outputChanel = vscode.window.createOutputChannel(
+                "Extension API"
+            );
+        }
+
+        if (this.determinePromise(expression, output)) {
+            return;
+        }
+
+        if(typeof(output) === "object"){
+            output = JSON.stringify(
+                output, undefined, this.pretty ? 2 : undefined
+            );
+        }else if(output === undefined || output === null){
+            output = typeof(output);
         }else{
-            vscode.window.showInformationMessage(
-                output, {
-                    title: "Re-Evaluate",
-                    identifier: "reevaluate"
-                }, {
-                    title: "Show Full Output",
-                    identifier: "show"
-                }
-            ).then(actionHandler);
+            output = `${ output }`;
+        }
+
+        this.outputChanel.appendLine(`Expression: ${ expression }`);
+        this.outputChanel.appendLine(`Output: ${ output }`);
+
+        this.resolveExpression(expression, output)
+    }
+
+    evaluateExpression(expression: string){
+        if (this.outputChanel) {
+            this.outputChanel.clear();
+        }
+        try {
+            this.determineOutput(expression, eval(expression))
+        } catch (error) {
+            this.rejectExpression(expression, error);
         }
     }
 

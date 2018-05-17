@@ -2,7 +2,7 @@
   "name": "extension-api",
   "displayName": "Extension API",
   "description": "Evaluate Visual Studio Code's Extension API",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "spywhere",
   "icon": "images/icon.png",
   "bugs": {
@@ -73,6 +73,11 @@
           "type": "boolean",
           "default": true,
           "description": "Include private properties (prefixed with \"_\") in the pick items."
+        },
+        "extension-api.pretty": {
+          "type": "boolean",
+          "default": false,
+          "description": "Prettify output."
         },
         "extension-api.showAPIShortcut": {
           "type": "boolean",
