@@ -2,7 +2,7 @@
   "name": "extension-api",
   "displayName": "Extension API",
   "description": "Evaluate Visual Studio Code's Extension API",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "publisher": "spywhere",
   "icon": "images/icon.png",
   "bugs": {
